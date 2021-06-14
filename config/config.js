@@ -1,5 +1,30 @@
 const config = {
   PORT: 9000,
+  CLIENT_ID: '161d15fb01db4109a90eac35ffd907c1',
+  CLIENT_SECRET: 'e6a3bcd8889940e7a190b86a99b2ecca',
+  SPOTIFY_AUTHORIZE_URI: 'https://accounts.spotify.com/authorize?',
+  STATE_KEY: 'spotify_auth_state',
+  SCOPE: [
+    'ugc-image-upload',
+    'user-read-recently-played',
+    'user-read-recently-played',
+    'user-read-playback-position',
+    'user-read-playback-state',
+    'user-modify-playback-state',
+    'user-read-currently-playing',
+    'app-remote-control',
+    'streaming',
+    'playlist-modify-public',
+    'playlist-modify-private',
+    'playlist-read-private',
+    'playlist-read-collaborative',
+    'user-follow-modify',
+    'user-follow-read',
+    'user-library-modify',
+    'user-library-read',
+    'user-read-email',
+    'user-read-private',
+  ],
 };
 
 module.exports = config;
