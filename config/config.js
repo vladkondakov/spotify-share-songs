@@ -25,6 +25,7 @@ const config = {
     'user-read-email',
     'user-read-private',
   ],
+  SPOTIFY_AUTH_BASE_URL: 'http://localhost:9000/spotify',
 };
 
 module.exports = config;

@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
   res.json({ answer: 'Congrats!' });
 });
 
-app.use('/spotify', require('./routes/spotify.js'));
+app.use('/spotify', require('./routes/spotify-route.js'));
 
 const { PORT } = config || process.env || { PORT: 9000 };
 

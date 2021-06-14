@@ -1,30 +1,21 @@
-const router = require('express').Router();
 const querystring = require('querystring');
 const request = require('request');
-const config = require('../config/config.js');
+const Helpers = require('../helpers/helpers.js');
 
-const generateRandomString = (length) => {
-  let text = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const {
+  CLIENT_ID,
+  CLIENT_SECRET,
+  SPOTIFY_AUTHORIZE_URI,
+  STATE_KEY,
+  SCOPE,
+  SPOTIFY_AUTH_BASE_URL,
+} = require('../config/config.js');
 
-  for (let i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-};
+const redirectURI = `${SPOTIFY_AUTH_BASE_URL}/authCallback`;
 
-const { CLIENT_ID, CLIENT_SECRET, SPOTIFY_AUTHORIZE_URI, STATE_KEY, SCOPE } = config;
-const redirectURI = 'http://localhost:9000/spotify/authCallback';
-
-router.route('/login').get((req, res) => {
-  const state = generateRandomString(16);
-  let activeScope = '';
-
-  SCOPE.forEach((scopeNode) => {
-    activeScope += `${scopeNode} `;
-  });
-
-  activeScope = activeScope.trim();
+const login = (req, res) => {
+  const state = Helpers.generateRandomString(16);
+  const activeScope = Helpers.getActiveScope(SCOPE);
 
   res.cookie(STATE_KEY, state);
 
@@ -38,9 +29,9 @@ router.route('/login').get((req, res) => {
         state,
       })
   );
-});
+};
 
-router.route('/authCallback').get((req, res) => {
+const authCallback = (req, res) => {
   const code = req.query.code || null;
   const state = req.query.state || null;
   const storedState = req.cookies ? req.cookies[STATE_KEY] : null;
@@ -71,6 +62,7 @@ router.route('/authCallback').get((req, res) => {
       if (!error && response.statusCode === 200) {
         const { access_token: accessToken } = body;
         const { refresh_token: refreshToken } = body;
+
         const options = {
           url: 'https://api.spotify.com/v1/me',
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -96,9 +88,9 @@ router.route('/authCallback').get((req, res) => {
       }
     });
   }
-});
+};
 
-router.route('/refreshToken').get((req, res) => {
+const refreshAccessToken = (req, res) => {
   const { refresh_token: refreshToken } = req.query;
   const authOptions = {
     url: 'https://accounts.spotify.com/api/token',
@@ -121,6 +113,10 @@ router.route('/refreshToken').get((req, res) => {
       });
     }
   });
-});
+};
 
-module.exports = router;
+module.exports = {
+  login,
+  authCallback,
+  refreshAccessToken,
+};
