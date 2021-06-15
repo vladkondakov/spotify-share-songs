@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const config = require('./config/config.js');
+const apiErrorHandler = require('./error/apierror-handler.js');
 
 const app = express();
 
@@ -11,6 +12,13 @@ app.get('/', (req, res) => {
 });
 
 app.use('/spotify', require('./routes/spotify-route.js'));
+
+// app.use((req, res, next) => {
+//   const err = Error(`The url you are trying to reach is not hosted on the server.`);
+//   return next(err);
+// });
+
+app.use(apiErrorHandler);
 
 const { PORT } = config || process.env || { PORT: 9000 };
 
