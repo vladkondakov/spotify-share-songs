@@ -42,7 +42,7 @@ const authCallback = async (req, res, next) => {
 
   res.clearCookie(STATE_KEY);
 
-  const options = {
+  const authOptions = {
     method: 'post',
     url: 'https://accounts.spotify.com/api/token',
     params: {
@@ -56,11 +56,14 @@ const authCallback = async (req, res, next) => {
   };
 
   try {
-    const authResponse = await axios(options);
+    const authResponse = await axios(authOptions);
     if (authResponse.status !== 200) {
       return next(Error('invalid_token'));
     }
-    return res.json(authResponse.data);
+
+    return res.json({
+      auth_data: authResponse.data,
+    });
   } catch (err) {
     return next(err);
   }

@@ -1,5 +1,6 @@
 const config = {
   PORT: 9000,
+  REFRESH_TOKEN_COOKIE_TIME: 30 * 24 * 3600000,
   CLIENT_ID: '161d15fb01db4109a90eac35ffd907c1',
   CLIENT_SECRET: 'e6a3bcd8889940e7a190b86a99b2ecca',
   SPOTIFY_AUTHORIZE_URI: 'https://accounts.spotify.com/authorize?',
@@ -26,6 +27,8 @@ const config = {
     'user-read-private',
   ],
   SPOTIFY_AUTH_BASE_URL: 'http://localhost:9000/spotify',
+  REDIS_HOST: 'localhost',
+  REDIST_PORT: '6379',
 };
 
 module.exports = config;
