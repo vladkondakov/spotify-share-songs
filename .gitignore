@@ -1,6 +1,4 @@
 node_modules
-.eslintrc.js
-.prettierrc
 config
 .vscode
 .env
