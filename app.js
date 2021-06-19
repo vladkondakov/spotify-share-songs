@@ -20,11 +20,6 @@ app.get('/', (req, res) => {
 app.use('/api/auth', require('./routes/auth-route.js'));
 app.use('/spotify', require('./routes/spotify-route.js'));
 
-// app.use((req, res, next) => {
-//   const err = Error(`The url you are trying to reach is not hosted on the server.`);
-//   return next(err);
-// });
-
 app.use(apiErrorHandler);
 
 const PORT = process.env.PORT || config.PORT || 9000;

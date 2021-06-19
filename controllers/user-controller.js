@@ -20,7 +20,9 @@ class UserController {
 
   login = async (req, res, next) => {
     try {
-    } catch (err) {}
+    } catch (err) {
+      return next(err);
+    }
   };
 
   logout = async (req, res, next) => {

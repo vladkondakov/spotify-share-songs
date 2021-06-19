@@ -4,13 +4,14 @@ const UserModel = require('../models/user-model.js');
 const mailService = require('./mail-service.js');
 const tokenService = require('./token-service.js');
 const UserDto = require('../dtos/user-dto.js');
+const ApiError = require('../error/api-error.js');
 
 class UserService {
   registration = async (email, password) => {
     const candidate = await UserModel.findOne({ email });
 
     if (candidate) {
-      throw new Error(`User ${email} has been found.`);
+      throw ApiError.BadRequest(`User ${email} has been found.`);
     }
 
     const hashedPassword = await bcrypt.hash(password, 4);
@@ -20,6 +21,7 @@ class UserService {
       password: hashedPassword,
       activationEmailLink: activationLink,
     });
+
     const validActivationLink = `${process.env.API_URL}/api/auth/activate/${activationLink}`;
 
     await mailService.sendActivationMail(email, validActivationLink);
@@ -36,7 +38,7 @@ class UserService {
     const user = await UserModel.findOne({ activationEmailLink: activationLink });
 
     if (!user) {
-      throw new Error('Wrong activation link');
+      throw ApiError.BadRequest('Wrong activation link');
     }
 
     user.isActivated = true;
