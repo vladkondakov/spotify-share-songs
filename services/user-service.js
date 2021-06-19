@@ -38,11 +38,38 @@ class UserService {
     const user = await UserModel.findOne({ activationEmailLink: activationLink });
 
     if (!user) {
-      throw ApiError.BadRequest('Wrong activation link');
+      throw ApiError.BadRequest('Wrong activation link.');
     }
 
     user.isActivated = true;
     await user.save();
+  };
+
+  login = async (email, password) => {
+    const user = await UserModel.findOne({ email });
+
+    // return an object with static message and email in a separate field
+    if (!user) {
+      throw ApiError.BadRequest(`User ${email} hasn't been found.`);
+    }
+
+    const isPasswordEquals = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordEquals) {
+      throw ApiError.BadRequest('Wrong password.');
+    }
+
+    const userDto = new UserDto(user);
+    const tokens = tokenService.generateTokens({ ...userDto });
+
+    await tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+    return { ...tokens, user: userDto };
+  };
+
+  logout = async (refreshToken) => {
+    const token = await tokenService.removeToken(refreshToken);
+    return token;
   };
 }
 
