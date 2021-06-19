@@ -14,6 +14,6 @@ module.exports = class ApiError extends Error {
   }
 
   static Unauthorized() {
-    return new ApiError(401, 'User is unauthorized');
+    return new ApiError(401, 'User is unauthorized.');
   }
 };

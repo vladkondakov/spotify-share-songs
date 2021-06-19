@@ -21,8 +21,31 @@ class TokenService {
     return token;
   };
 
+  validateAccessToken = (token) => {
+    try {
+      const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+      return userData;
+    } catch (err) {
+      return null;
+    }
+  };
+
+  validateRefreshToken = (token) => {
+    try {
+      const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+      return userData;
+    } catch (err) {
+      return null;
+    }
+  };
+
   removeToken = async (refreshToken) => {
-    const tokenData = tokenModel.deleteOne({ refreshToken });
+    const tokenData = await tokenModel.deleteOne({ refreshToken });
+    return tokenData;
+  };
+
+  findToken = async (refreshToken) => {
+    const tokenData = await tokenModel.findOne({ refreshToken });
     return tokenData;
   };
 }

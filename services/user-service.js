@@ -48,7 +48,6 @@ class UserService {
   login = async (email, password) => {
     const user = await UserModel.findOne({ email });
 
-    // return an object with static message and email in a separate field
     if (!user) {
       throw ApiError.BadRequest(`User ${email} hasn't been found.`);
     }
@@ -70,6 +69,32 @@ class UserService {
   logout = async (refreshToken) => {
     const token = await tokenService.removeToken(refreshToken);
     return token;
+  };
+
+  refresh = async (refreshToken) => {
+    if (!refreshToken) {
+      throw ApiError.Unauthorized();
+    }
+
+    const userData = tokenService.validateRefreshToken(refreshToken);
+    const existingToken = await tokenService.findToken(refreshToken);
+
+    if (!userData || !existingToken) {
+      throw ApiError.Unauthorized();
+    }
+
+    const user = await UserModel.findById(userData.id);
+    const userDto = new UserDto(user);
+    const tokens = tokenService.generateTokens({ ...userDto });
+
+    await tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+    return { ...tokens, user: userDto };
+  };
+
+  getAllUsers = async () => {
+    const users = await UserModel.find();
+    return users;
   };
 }
 
