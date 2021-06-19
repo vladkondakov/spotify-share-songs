@@ -25,23 +25,35 @@ class UserController {
 
   logout = async (req, res, next) => {
     try {
-    } catch (err) {}
+    } catch (err) {
+      return next(err);
+    }
   };
 
   activateByLink = async (req, res, next) => {
     try {
-    } catch (err) {}
+      const { link: activationLink } = req.params;
+      await userService.activate(activationLink);
+
+      return res.redirect(process.env.CLIENT_URL);
+    } catch (err) {
+      return next(err);
+    }
   };
 
   refreshToken = async (req, res, next) => {
     try {
-    } catch (err) {}
+    } catch (err) {
+      return next(err);
+    }
   };
 
   getUsers = async (req, res, next) => {
     try {
-      res.json({ message: 'Some message!' });
-    } catch (err) {}
+      return res.json({ message: 'Some message!' });
+    } catch (err) {
+      return next(err);
+    }
   };
 }
 
