@@ -1,11 +1,21 @@
-require('dotenv').config();
+const path = require('path');
+const process = require('process');
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const process = require('process');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const config = require('./config/config.js');
 const apiErrorHandler = require('./error/apierror-handler.js');
+
+let envFileName;
+
+if (process.env.NODE_ENV === 'production') {
+  envFileName = '.production.env';
+} else {
+  envFileName = '.development.env';
+}
+
+require('dotenv').config({ path: path.resolve(process.cwd(), envFileName) });
 
 const app = express();
 
