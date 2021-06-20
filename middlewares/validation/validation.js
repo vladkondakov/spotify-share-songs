@@ -1,5 +1,5 @@
 const { registrationSchema } = require('./validation-schemas.js');
-const ApiError = require('../error/api-error.js');
+const ApiError = require('../../error/api-error.js');
 
 class Validation {
   validateRegistration = async (req, res, next) => {
