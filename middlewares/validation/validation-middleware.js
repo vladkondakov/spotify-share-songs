@@ -1,16 +1,28 @@
 const Schemas = require('./validation-schemas.js');
 const ApiError = require('../../error/api-error.js');
 
+const validateData = async (schema, data) => {
+  try {
+    await schema.validateAsync(data);
+  } catch (err) {
+    throw ApiError.BadRequest('The entered data is not valid.', err.details);
+  }
+};
+
 class Validation {
   validateRegistration = async (req, res, next) => {
-    const { email, password } = req.body;
+    const { email, password, confirmationPassword } = req.body;
     const { registrationSchema } = Schemas;
 
+    if (password !== confirmationPassword) {
+      return next(ApiError.BadRequest('The passwords are not similar.', [req.body]));
+    }
+
     try {
-      await registrationSchema.validateAsync({ email, password });
+      await validateData(registrationSchema, { email, password });
       return next();
     } catch (err) {
-      return next(ApiError.BadRequest('The entered data is not valid.', err.details));
+      return next(err);
     }
   };
 
@@ -19,10 +31,10 @@ class Validation {
     const { loginSchema } = Schemas;
 
     try {
-      await loginSchema.validateAsync({ email, password });
+      await validateData(loginSchema, { email, password });
       return next();
     } catch (err) {
-      return next(ApiError.BadRequest('The entered data is not valid', err.details));
+      return next(err);
     }
   };
 }

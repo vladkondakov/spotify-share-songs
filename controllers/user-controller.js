@@ -47,12 +47,25 @@ class UserController {
     }
   };
 
-  activateByLink = async (req, res, next) => {
+  activateByCode = async (req, res, next) => {
     try {
-      const { link: activationLink } = req.params;
-      await userService.activate(activationLink);
+      const { code: activationCode } = req.params;
+      await userService.activate(activationCode);
 
       return res.redirect(process.env.CLIENT_URL);
+    } catch (err) {
+      return next(err);
+    }
+  };
+
+  refreshActivationCode = async (req, res, next) => {
+    try {
+      const { code: activationCode } = req.params;
+      const newCode = await userService.refreshActivationCode(activationCode);
+
+      return res.json({
+        code: newCode,
+      });
     } catch (err) {
       return next(err);
     }

@@ -2,10 +2,10 @@ const router = require('express').Router();
 const SpotifyAuth = require('../controllers/spotify-auth-controller.js');
 const SpotifyController = require('../controllers/spotify-controller.js');
 
-router.route('/login').get(SpotifyAuth.login);
-router.route('/authCallback').get(SpotifyAuth.authCallback);
-router.route('/refreshToken').get(SpotifyAuth.refreshAccessToken);
+router.get('/login', SpotifyAuth.login);
+router.get('/authCallback', SpotifyAuth.authCallback);
+router.get('/refreshToken', SpotifyAuth.refreshAccessToken);
 
-router.route('/profile').get(SpotifyController.getProfileData);
+router.get('/profile', SpotifyController.getProfileData);
 
 module.exports = router;

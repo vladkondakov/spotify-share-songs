@@ -14,8 +14,18 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  activationEmailLink: {
-    type: String,
+  activationEmailData: {
+    activationCode: {
+      type: String,
+    },
+    expiresIn: {
+      type: Date,
+      default: Date.now(),
+    },
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
   },
 });
 

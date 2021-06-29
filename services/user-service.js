@@ -5,6 +5,7 @@ const mailService = require('./mail-service.js');
 const tokenService = require('./token-service.js');
 const UserDto = require('../dtos/user-dto.js');
 const ApiError = require('../error/api-error.js');
+const { isExpired, getExpiresTime } = require('../helpers/helpers.js');
 
 class UserService {
   registration = async (email, password) => {
@@ -15,14 +16,17 @@ class UserService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 4);
-    const activationLink = uuid.v4();
+    const activationCode = uuid.v4();
     const user = await UserModel.create({
       email,
       password: hashedPassword,
-      activationEmailLink: activationLink,
+      activationEmailData: {
+        activationCode,
+        expiresIn: getExpiresTime(),
+      },
     });
 
-    const validActivationLink = `${process.env.API_URL}/api/auth/activate/${activationLink}`;
+    const validActivationLink = `${process.env.API_URL}/api/auth/activate/${activationCode}`;
 
     await mailService.sendActivationMail(email, validActivationLink);
 
@@ -34,15 +38,38 @@ class UserService {
     return { ...tokens, user: userDto };
   };
 
-  activate = async (activationLink) => {
-    const user = await UserModel.findOne({ activationEmailLink: activationLink });
+  activate = async (activationCode) => {
+    const user = await UserModel.findOne({ 'activationEmailData.activationCode': activationCode });
 
     if (!user) {
-      throw ApiError.BadRequest('Wrong activation link.');
+      throw ApiError.BadRequest('Wrong activation code.');
+    }
+
+    if (isExpired(user.activationEmailData.expiresIn)) {
+      throw ApiError.Gone();
     }
 
     user.isActivated = true;
     await user.save();
+  };
+
+  refreshActivationCode = async (activationCode) => {
+    const user = await UserModel.findOne({ 'activationEmailData.activationCode': activationCode });
+
+    if (!user) {
+      throw ApiError.BadRequest('Wrong activation code.');
+    }
+
+    const newCode = uuid.v4();
+
+    user.activationEmailData = {
+      activationCode: newCode,
+      expiresIn: getExpiresTime(),
+    };
+
+    await user.save();
+
+    return newCode;
   };
 
   login = async (email, password) => {
