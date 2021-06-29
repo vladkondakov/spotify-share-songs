@@ -16,4 +16,8 @@ module.exports = class ApiError extends Error {
   static Unauthorized() {
     return new ApiError(401, 'User is unauthorized.');
   }
+
+  static Gone() {
+    return new ApiError(410, 'The requested resource is no longer available.');
+  }
 };
