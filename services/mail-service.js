@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer');
+const config = require('../config/config.js');
 
+const activationCodeTime = config.ACTIVATION_CODE_TIME / 100 / 60;
 class MailService {
   constructor() {
     this.transporter = nodemailer.createTransport({
@@ -16,8 +18,9 @@ class MailService {
   sendActivationMail = async (to, link) => {
     const htmlText = `
       <div>
-        <h1>Follow the link to activate your account</h1>
+        <h1>Follow the link to activate your account:</h1>
         <a href="${link}">${link}</a>
+        <p>This link is valid for ${activationCodeTime} minutes.</p>
       </div>`;
 
     await this.transporter.sendMail({
