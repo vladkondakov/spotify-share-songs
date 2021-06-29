@@ -3,8 +3,15 @@ const tokenModel = require('../models/token-model.js');
 
 class TokenService {
   generateTokens = (payload) => {
-    const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: '30m' });
-    const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' });
+    const {
+      JWT_ACCESS_SECRET: jwtAccessSecret,
+      JWT_REFRESH_SECRET: jwtRefreshSecret,
+      JWT_ACCESS_TIME: jwtAccessTime,
+      JWT_REFRESH_TIME: jwtRefreshTime,
+    } = process.env;
+
+    const accessToken = jwt.sign(payload, jwtAccessSecret, { expiresIn: jwtAccessTime });
+    const refreshToken = jwt.sign(payload, jwtRefreshSecret, { expiresIn: jwtRefreshTime });
 
     return { accessToken, refreshToken };
   };
