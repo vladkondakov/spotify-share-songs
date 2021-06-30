@@ -30,7 +30,7 @@ const config = {
   ],
   SPOTIFY_AUTH_BASE_URL: 'http://localhost:9000/spotify',
   REDIS_HOST: 'localhost',
-  REDIST_PORT: '6379',
+  REDIS_PORT: '6379',
 };
 
 module.exports = config;
