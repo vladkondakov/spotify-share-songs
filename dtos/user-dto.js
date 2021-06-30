@@ -15,6 +15,6 @@ module.exports = class UserDto {
     this.id = model._id;
     this.isActivated = model.isActivated;
     this.createdAt = model.createdAt;
-    this.activationCode = model.activationEmailData.activationCode;
+    this.activationCode = model.activationData.activationCode;
   }
 };

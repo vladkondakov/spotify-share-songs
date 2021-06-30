@@ -47,12 +47,13 @@ class UserController {
     }
   };
 
+  // return something instead of client url
   activateByCode = async (req, res, next) => {
     try {
       const { code: activationCode } = req.params;
       await userService.activate(activationCode);
 
-      return res.redirect(process.env.CLIENT_URL);
+      return res.status(200).json({ message: 'User was activated' });
     } catch (err) {
       return next(err);
     }
@@ -81,7 +82,7 @@ class UserController {
         httpOnly: true,
       });
 
-      return res.json({ userData });
+      return res.json(userData);
     } catch (err) {
       return next(err);
     }
@@ -91,6 +92,28 @@ class UserController {
     try {
       const users = await userService.getAllUsers();
       return res.json(users);
+    } catch (err) {
+      return next(err);
+    }
+  };
+
+  requestPasswordReset = async (req, res, next) => {
+    try {
+      const { email } = req.user;
+      const resetData = await userService.requestPasswordReset(email);
+      return res.json(resetData);
+    } catch (err) {
+      return next(err);
+    }
+  };
+
+  // what is an appropriate http status code
+  resetPasswordByToken = async (req, res, next) => {
+    try {
+      const { token, password } = req.body;
+      const { email, userID } = req.user;
+      await userService.resetPassword({ token, password, email, userID });
+      return res.status(200).end();
     } catch (err) {
       return next(err);
     }

@@ -19,7 +19,7 @@ class Validation {
     }
 
     try {
-      await validateData(registrationSchema, { email, password });
+      await validateData(registrationSchema, { email, password, confirmationPassword });
       return next();
     } catch (err) {
       return next(err);
@@ -32,6 +32,22 @@ class Validation {
 
     try {
       await validateData(loginSchema, { email, password });
+      return next();
+    } catch (err) {
+      return next(err);
+    }
+  };
+
+  validatePasswordReset = async (req, res, next) => {
+    const { password, confirmationPassword } = req.body;
+    const { passwordResetSchema } = Schemas;
+
+    if (password !== confirmationPassword) {
+      return next(ApiError.BadRequest('The passwords are not similar.', [req.body]));
+    }
+
+    try {
+      await validateData(passwordResetSchema, { password, confirmationPassword });
       return next();
     } catch (err) {
       return next(err);

@@ -22,11 +22,13 @@ const getActiveScope = (scope) => {
 
 const isExpired = (expiresIn) => Date.now() - expiresIn >= 0;
 
-const getExpiresTime = () => Date.now() + config.ACTIVATION_CODE_TIME;
+const getActivationCodeExpiresTime = () => Date.now() + config.ACTIVATION_CODE_TIME;
+const getResetPasswordTokenExpiresTime = () => Date.now() + config.RESET_PASSWORD_TOKEN_TIME;
 
 module.exports = {
   generateRandomString,
   getActiveScope,
   isExpired,
-  getExpiresTime,
+  getActivationCodeExpiresTime,
+  getResetPasswordTokenExpiresTime,
 };

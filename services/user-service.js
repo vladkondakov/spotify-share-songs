@@ -3,9 +3,10 @@ const uuid = require('uuid');
 const UserModel = require('../models/user-model.js');
 const mailService = require('./mail-service.js');
 const tokenService = require('./token-service.js');
+const passwordTokenService = require('./password-token-service.js');
 const UserDto = require('../dtos/user-dto.js');
 const ApiError = require('../error/api-error.js');
-const { isExpired, getExpiresTime } = require('../helpers/helpers.js');
+const { isExpired, getActivationCodeExpiresTime } = require('../helpers/helpers.js');
 
 class UserService {
   registration = async (email, password) => {
@@ -20,9 +21,9 @@ class UserService {
     const user = await UserModel.create({
       email,
       password: hashedPassword,
-      activationEmailData: {
+      activationData: {
         activationCode,
-        expiresIn: getExpiresTime(),
+        expiresIn: getActivationCodeExpiresTime(),
       },
     });
 
@@ -39,13 +40,13 @@ class UserService {
   };
 
   activate = async (activationCode) => {
-    const user = await UserModel.findOne({ 'activationEmailData.activationCode': activationCode });
+    const user = await UserModel.findOne({ 'activationData.activationCode': activationCode });
 
     if (!user) {
       throw ApiError.BadRequest('Wrong activation code.');
     }
 
-    if (isExpired(user.activationEmailData.expiresIn)) {
+    if (isExpired(user.activationData.expiresIn)) {
       throw ApiError.Gone();
     }
 
@@ -54,17 +55,20 @@ class UserService {
   };
 
   refreshActivationCode = async (activationCode) => {
-    const user = await UserModel.findOne({ 'activationEmailData.activationCode': activationCode });
+    const user = await UserModel.findOne({ 'activationData.activationCode': activationCode });
 
     if (!user) {
       throw ApiError.BadRequest('Wrong activation code.');
     }
 
     const newCode = uuid.v4();
+    const validActivationLink = `${process.env.API_URL}/api/auth/activate/${newCode}`;
 
-    user.activationEmailData = {
+    await mailService.sendActivationMail(user.email, validActivationLink);
+
+    user.activationData = {
       activationCode: newCode,
-      expiresIn: getExpiresTime(),
+      expiresIn: getActivationCodeExpiresTime(),
     };
 
     await user.save();
@@ -76,7 +80,7 @@ class UserService {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      throw ApiError.BadRequest(`User ${email} hasn't been found.`);
+      throw ApiError.BadRequest(`User ${email} does not exist.`);
     }
 
     const isPasswordEquals = await bcrypt.compare(password, user.password);
@@ -122,6 +126,38 @@ class UserService {
   getAllUsers = async () => {
     const users = await UserModel.find();
     return users;
+  };
+
+  requestPasswordReset = async (email) => {
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      throw ApiError.BadRequest(`User ${email} does not exist.`);
+    }
+
+    const { id } = new UserDto(user);
+    const token = passwordTokenService.generateResetToken(id);
+
+    // get the address of the resource from which the request was sent?
+    const resetLink = `${process.env.CLIENT_URL}/api/auth/reset/password-by-link?token=${token}&id=${id}`;
+
+    mailService.sendResetPasswordMail(id, resetLink);
+
+    return { token, id };
+  };
+
+  resetPassword = async (resetData) => {
+    const { email, token, password, userID } = resetData;
+
+    await passwordTokenService.validateToken(token, userID);
+
+    const hashedPassword = await bcrypt.hash(password, 4);
+    const user = await UserModel.findOne({ email });
+
+    user.password = hashedPassword;
+    await user.save();
+
+    await mailService.sendActivationMail(email);
   };
 }
 

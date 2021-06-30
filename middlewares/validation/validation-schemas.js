@@ -4,6 +4,7 @@ const registrationSchema = Joi.object()
   .keys({
     email: Joi.string().email().required(),
     password: Joi.string().pattern(/^\w+$/).min(3).max(16).required(),
+    confirmationPassword: Joi.string().pattern(/^\w+$/).min(3).max(16).required(),
   })
   .options({ abortEarly: false });
 
@@ -14,7 +15,15 @@ const loginSchema = Joi.object()
   })
   .options({ abortEarly: false });
 
+const passwordResetSchema = Joi.object()
+  .keys({
+    password: Joi.string().pattern(/^\w+$/).min(3).max(16).required(),
+    confirmationPassword: Joi.string().pattern(/^\w+$/).min(3).max(16).required(),
+  })
+  .options({ abortEarly: false });
+
 module.exports = {
   registrationSchema,
   loginSchema,
+  passwordResetSchema,
 };
