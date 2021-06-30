@@ -2,7 +2,6 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const PasswordTokenModel = require('../models/password-token-model.js');
 const { getResetPasswordTokenExpiresTime, isExpired } = require('../helpers/helpers.js');
-const ApiError = require('../error/api-error.js');
 
 class PasswordTokenService {
   generateResetToken = async (userID) => {
@@ -26,23 +25,30 @@ class PasswordTokenService {
   };
 
   validateToken = async (token, userID) => {
-    const passwordResetToken = await PasswordTokenModel.findOne({ user: userID });
+    try {
+      const passwordResetToken = await PasswordTokenModel.findOne({ user: userID });
 
-    if (!passwordResetToken) {
-      throw ApiError.BadRequest('Invalid password reset token.');
+      if (!passwordResetToken) {
+        return null;
+      }
+
+      if (isExpired(passwordResetToken.expiresIn)) {
+        return null;
+      }
+
+      const isValid = await bcrypt.compare(token, passwordResetToken.token);
+
+      if (!isValid) {
+        return null;
+      }
+
+      const validToken = passwordResetToken.token;
+      passwordResetToken.deleteOne();
+
+      return validToken;
+    } catch (err) {
+      return null;
     }
-
-    if (isExpired(passwordResetToken.expiresIn)) {
-      throw ApiError.BadRequest('Expired password reset token.');
-    }
-
-    const isValid = await bcrypt.compare(token, passwordResetToken.token);
-
-    if (!isValid) {
-      throw ApiError.BadRequest('Wrong password reset token.');
-    }
-
-    passwordResetToken.deleteOne();
   };
 }
 

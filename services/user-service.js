@@ -149,7 +149,11 @@ class UserService {
   resetPassword = async (resetData) => {
     const { email, token, password, userID } = resetData;
 
-    await passwordTokenService.validateToken(token, userID);
+    const resetToken = await passwordTokenService.validateToken(token, userID);
+
+    if (!resetToken) {
+      throw ApiError.BadRequest('Invalid or expired password reset token.');
+    }
 
     const hashedPassword = await bcrypt.hash(password, 4);
     const user = await UserModel.findOne({ email });
