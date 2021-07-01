@@ -123,12 +123,7 @@ class UserService {
     return { ...tokens, user: userDto };
   };
 
-  getAllUsers = async () => {
-    const users = await UserModel.find();
-    return users;
-  };
-
-  requestPasswordReset = async (email) => {
+  requestPasswordReset = async (email, redirectURL) => {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
@@ -138,8 +133,7 @@ class UserService {
     const { id } = new UserDto(user);
     const token = passwordTokenService.generateResetToken(id);
 
-    // get the address of the resource from which the request was sent?
-    const resetLink = `${process.env.CLIENT_URL}/api/auth/reset/password-by-link?token=${token}&id=${id}`;
+    const resetLink = `${redirectURL}?token=${token}&id=${id}`;
 
     mailService.sendResetPasswordMail(id, resetLink);
 
@@ -161,7 +155,7 @@ class UserService {
     user.password = hashedPassword;
     await user.save();
 
-    await mailService.sendActivationMail(email);
+    await mailService.sendResetPasswordSuccessfulMail(email);
   };
 }
 

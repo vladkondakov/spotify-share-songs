@@ -20,4 +20,8 @@ module.exports = class ApiError extends Error {
   static Gone() {
     return new ApiError(410, 'The requested resource is no longer available.');
   }
+
+  static Forbidden(message) {
+    return new ApiError(403, message);
+  }
 };

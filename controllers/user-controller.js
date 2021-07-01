@@ -50,6 +50,7 @@ class UserController {
   activateByCode = async (req, res, next) => {
     try {
       const { code: activationCode } = req.params;
+
       await userService.activate(activationCode);
 
       return res.status(200).json({ message: 'User was activated' });
@@ -90,7 +91,10 @@ class UserController {
   requestPasswordReset = async (req, res, next) => {
     try {
       const { email } = req.user;
-      const resetData = await userService.requestPasswordReset(email);
+      const { redirect_url: redirectURL } = req.query;
+
+      const resetData = await userService.requestPasswordReset(email, redirectURL);
+
       return res.json(resetData);
     } catch (err) {
       return next(err);
@@ -98,7 +102,7 @@ class UserController {
   };
 
   // what is an appropriate http status code
-  resetPasswordByToken = async (req, res, next) => {
+  passwordResetByToken = async (req, res, next) => {
     try {
       const { token, password } = req.body;
       const { email, userID } = req.user;
