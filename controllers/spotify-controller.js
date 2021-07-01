@@ -1,4 +1,6 @@
 const axios = require('axios');
+const spotifyResponseMapper = require('../helpers/mappers.js');
+const ApiError = require('../error/api-error.js');
 
 const getProfileData = async (req, res, next) => {
   const { access_token: accessToken } = req.cookies;
@@ -11,13 +13,15 @@ const getProfileData = async (req, res, next) => {
       },
     };
 
-    const meResponse = await axios(meOptions);
-    if (meResponse.status !== 200) {
-      return next(Error(`Can't get profile data: ${meResponse.data}`));
+    const spotifyResponse = await axios(meOptions);
+    const mappedResponse = spotifyResponseMapper(spotifyResponse);
+
+    return res.json(mappedResponse.data);
+  } catch (err) {
+    if (err instanceof ApiError && err.errorResource === 'spotify') {
+      err.message = "Can't get profile data";
     }
 
-    return res.json(meResponse.data);
-  } catch (err) {
     return next(err);
   }
 };

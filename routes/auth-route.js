@@ -8,7 +8,7 @@ router.get('/activation/:code', userController.activateByCode); // post, code as
 router.get('/activation/refresh', authMiddleware, userController.refreshActivationCode);
 router.get('/token/refresh', userController.refreshToken);
 router.post('/registration', validation.validateRegistration, userController.registration);
-router.post('/login', validation.validateLogin, userController.login);
+router.post('/login', validation.validateLogin, userController.login); // delete
 router.post('/logout', userController.logout);
 router.get(
   '/reset/password-by-link',
@@ -22,6 +22,6 @@ router.post(
   authMiddleware,
   activationMiddleware,
   userController.passwordResetByToken
-);
+); // put
 
 module.exports = router;
