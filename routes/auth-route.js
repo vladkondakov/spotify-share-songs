@@ -3,8 +3,8 @@ const userController = require('../controllers/user-controller.js');
 const validation = require('../middlewares/validation/validation-middleware.js');
 const authMiddleware = require('../middlewares/auth-middleware.js');
 
-router.get('/activate/:code', userController.activateByCode);
-router.get('/activate/refresh/:code', authMiddleware, userController.refreshActivationCode);
+router.get('/activation/:code', userController.activateByCode); // post
+router.get('/activation/refresh/', authMiddleware, userController.refreshActivationCode);
 router.get('/token/refresh', userController.refreshToken);
 router.get('/users', authMiddleware, userController.getUsers);
 router.post('/registration', validation.validateRegistration, userController.registration);

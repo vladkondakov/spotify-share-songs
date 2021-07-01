@@ -47,7 +47,6 @@ class UserController {
     }
   };
 
-  // return something instead of client url
   activateByCode = async (req, res, next) => {
     try {
       const { code: activationCode } = req.params;
@@ -61,8 +60,8 @@ class UserController {
 
   refreshActivationCode = async (req, res, next) => {
     try {
-      const { code: activationCode } = req.params;
-      const newCode = await userService.refreshActivationCode(activationCode);
+      const { email } = req.user;
+      const newCode = await userService.refreshActivationCode(email);
 
       return res.json({
         code: newCode,
@@ -83,15 +82,6 @@ class UserController {
       });
 
       return res.json(userData);
-    } catch (err) {
-      return next(err);
-    }
-  };
-
-  getUsers = async (req, res, next) => {
-    try {
-      const users = await userService.getAllUsers();
-      return res.json(users);
     } catch (err) {
       return next(err);
     }

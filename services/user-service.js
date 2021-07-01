@@ -27,7 +27,7 @@ class UserService {
       },
     });
 
-    const validActivationLink = `${process.env.API_URL}/api/auth/activate/${activationCode}`;
+    const validActivationLink = `${process.env.API_URL}/api/auth/activation/${activationCode}`;
 
     await mailService.sendActivationMail(email, validActivationLink);
 
@@ -54,15 +54,15 @@ class UserService {
     await user.save();
   };
 
-  refreshActivationCode = async (activationCode) => {
-    const user = await UserModel.findOne({ 'activationData.activationCode': activationCode });
+  refreshActivationCode = async (email) => {
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
-      throw ApiError.BadRequest('Wrong activation code.');
+      throw ApiError.BadRequest(`User ${email} does not exist.`);
     }
 
     const newCode = uuid.v4();
-    const validActivationLink = `${process.env.API_URL}/api/auth/activate/${newCode}`;
+    const validActivationLink = `${process.env.API_URL}/api/auth/activation/${newCode}`;
 
     await mailService.sendActivationMail(user.email, validActivationLink);
 
