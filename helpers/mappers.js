@@ -1,46 +1,41 @@
 const ApiError = require('../error/api-error.js');
 
-// spotifyResponse is an axios instance
-const spotifyResponseMapper = (spotifyResponse) => {
-  const resource = 'spotify';
-  const { status } = spotifyResponse;
-  const message = spotifyResponse.data?.error?.message || spotifyResponse.data?.error_description;
+const SPOTIFY_RESOURCE = 'spotify';
+
+const spotifyErrorMapper = (spotifyError) => {
+  const { status, statusText, headers, data } = spotifyError.response;
+  const message = data?.error?.message || data?.error_description;
   const errors = [];
 
-  const responseData = {
+  const errorData = {
     message,
-    data: spotifyResponse.data,
     status,
-    statusText: spotifyResponse.statusText,
-    headers: spotifyResponse.headers,
+    statusText,
+    headers,
   };
 
-  if (status >= 400) {
-    errors.push(responseData);
+  errors.push(errorData);
 
-    switch (status) {
-      case 400:
-        throw ApiError.BadRequest(message, errors, resource);
-      case 401:
-        throw ApiError.Unauthorized(message, errors, resource);
-      case 403:
-        throw ApiError.Forbidden(message, errors, resource);
-      case 404:
-        throw ApiError.NotFound(message, errors, resource);
-      case 429:
-        throw ApiError.TooManyRequests(message, errors, resource);
-      case 500:
-        throw ApiError.InternalServerError(message, errors, resource);
-      case 502:
-        throw ApiError.BadGateWay(message, errors, resource);
-      case 503:
-        throw ApiError.ServiceUnavailable(message, errors, resource);
-      default:
-        throw ApiError.InternalServerError(message, errors, resource);
-    }
-  } else {
-    return responseData;
+  switch (status) {
+    case 400:
+      return ApiError.BadRequest(message, errors, SPOTIFY_RESOURCE);
+    case 401:
+      return ApiError.Unauthorized(message, errors, SPOTIFY_RESOURCE);
+    case 403:
+      return ApiError.Forbidden(message, errors, SPOTIFY_RESOURCE);
+    case 404:
+      return ApiError.NotFound(message, errors, SPOTIFY_RESOURCE);
+    case 429:
+      return ApiError.TooManyRequests(message, errors, SPOTIFY_RESOURCE);
+    case 500:
+      return ApiError.InternalServerError(message, errors, SPOTIFY_RESOURCE);
+    case 502:
+      return ApiError.BadGateWay(message, errors, SPOTIFY_RESOURCE);
+    case 503:
+      return ApiError.ServiceUnavailable(message, errors, SPOTIFY_RESOURCE);
+    default:
+      return ApiError.InternalServerError(message, errors, SPOTIFY_RESOURCE);
   }
 };
 
-module.exports = { spotifyResponseMapper };
+module.exports = { spotifyErrorMapper };

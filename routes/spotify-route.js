@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const SpotifyAuth = require('../controllers/spotify-auth-controller.js');
-const SpotifyController = require('../controllers/spotify-controller.js');
+const SpotifyController = require('../controllers/spotify-user-controller.js');
 
 router.get('/login', SpotifyAuth.login);
 router.get('/authCallback', SpotifyAuth.authCallback);
