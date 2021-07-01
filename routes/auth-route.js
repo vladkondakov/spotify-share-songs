@@ -6,7 +6,6 @@ const authMiddleware = require('../middlewares/auth-middleware.js');
 router.get('/activation/:code', userController.activateByCode); // post
 router.get('/activation/refresh/', authMiddleware, userController.refreshActivationCode);
 router.get('/token/refresh', userController.refreshToken);
-router.get('/users', authMiddleware, userController.getUsers);
 router.post('/registration', validation.validateRegistration, userController.registration);
 router.post('/login', validation.validateLogin, userController.login);
 router.post('/logout', userController.logout);
