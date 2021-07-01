@@ -4,10 +4,13 @@ function apiErrorHandler(err, req, res, next) {
   console.log(err);
 
   if (err instanceof ApiError) {
+    const { message, errors, resource, status } = err;
+
     return res.status(err.status).json({
-      message: err.message,
-      errors: err.errors,
-      resource: err.resource,
+      message,
+      errors,
+      resource,
+      status,
     });
   }
 

@@ -3,16 +3,16 @@ const { spotifyErrorMapper } = require('../../helpers/mappers.js');
 
 class SpotifyUserService {
   getProfile = async (token) => {
-    try {
-      const options = {
-        url: 'https://api.spotify.com/v1/me',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+    const options = {
+      url: 'https://api.spotify.com/v1/me',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
+    try {
       const spotifyResponse = await axios(options);
-      return spotifyResponse;
+      return spotifyResponse.data;
     } catch (err) {
       throw spotifyErrorMapper(err);
     }

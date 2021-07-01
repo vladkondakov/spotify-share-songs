@@ -24,6 +24,7 @@ const isExpired = (expiresIn) => Date.now() - expiresIn >= 0;
 
 const getActivationCodeExpiresTime = () => Date.now() + config.ACTIVATION_CODE_TIME;
 const getResetPasswordTokenExpiresTime = () => Date.now() + config.RESET_PASSWORD_TOKEN_TIME;
+const getSpotifyAccessTokenExpiresTime = () => Date.now() + config.SPOTIFY_ACCESS_TOKEN_TIME;
 
 module.exports = {
   generateRandomString,
@@ -31,4 +32,5 @@ module.exports = {
   isExpired,
   getActivationCodeExpiresTime,
   getResetPasswordTokenExpiresTime,
+  getSpotifyAccessTokenExpiresTime,
 };
