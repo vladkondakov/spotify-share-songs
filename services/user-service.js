@@ -13,7 +13,7 @@ class UserService {
     const candidate = await UserModel.findOne({ email });
 
     if (candidate) {
-      throw ApiError.BadRequest(`User ${email} has been found.`);
+      throw ApiError.BadRequest(`User ${email} has been found`);
     }
 
     const hashedPassword = await bcrypt.hash(password, 4);
@@ -43,7 +43,7 @@ class UserService {
     const user = await UserModel.findOne({ 'activationData.activationCode': activationCode });
 
     if (!user) {
-      throw ApiError.BadRequest('Wrong activation code.');
+      throw ApiError.BadRequest('Wrong activation code');
     }
 
     if (isExpired(user.activationData.expiresIn)) {
@@ -80,13 +80,13 @@ class UserService {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      throw ApiError.BadRequest(`User ${email} does not exist.`);
+      throw ApiError.BadRequest(`User ${email} does not exist`);
     }
 
     const isPasswordEquals = await bcrypt.compare(password, user.password);
 
     if (!isPasswordEquals) {
-      throw ApiError.BadRequest('Wrong password.');
+      throw ApiError.BadRequest('Wrong password');
     }
 
     const userDto = new UserDto(user);
@@ -127,7 +127,7 @@ class UserService {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      throw ApiError.BadRequest(`User ${email} does not exist.`);
+      throw ApiError.BadRequest(`User ${email} does not exist`);
     }
 
     const { id } = new UserDto(user);
@@ -146,7 +146,7 @@ class UserService {
     const resetToken = await passwordTokenService.validateToken(token, userID);
 
     if (!resetToken) {
-      throw ApiError.BadRequest('Invalid or expired password reset token.');
+      throw ApiError.BadRequest('Invalid or expired password reset token');
     }
 
     const hashedPassword = await bcrypt.hash(password, 4);

@@ -16,7 +16,7 @@ module.exports = class ApiError extends Error {
     return new ApiError(400, message, errors, resource);
   }
 
-  static Unauthorized(message = 'User is unauthorized.', errors = [], resource = 'api') {
+  static Unauthorized(message = 'User is unauthorized', errors = [], resource = 'api') {
     return new ApiError(401, message, errors, resource);
   }
 
@@ -29,7 +29,7 @@ module.exports = class ApiError extends Error {
   }
 
   static Gone(
-    message = 'The requested resource is no longer available.',
+    message = 'The requested resource is no longer available',
     errors = [],
     resource = 'api'
   ) {

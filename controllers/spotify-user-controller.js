@@ -9,7 +9,7 @@ const getProfileData = async (req, res, next) => {
     return profileData;
   } catch (err) {
     if (err instanceof ApiError && err.resource === 'spotify') {
-      err.message = "Can't get profile data.";
+      err.message = "Can't get profile data";
     }
     return next(err);
   }
