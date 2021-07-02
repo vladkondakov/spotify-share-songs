@@ -1,6 +1,6 @@
 const router = require('express').Router();
-const SpotifyUserController = require('../controllers/spotify-user-controller.js');
-const SpotifyAuthController = require('../controllers/spotify-auth-controller.js');
+const SpotifyUserController = require('../../controllers/spotify/spotify-user-controller.js');
+const SpotifyAuthController = require('../../controllers/spotify/spotify-auth-controller.js');
 // const authMiddleware = require('../middlewares/auth-middleware.js');
 
 // router.use(authMiddleware);

@@ -1,7 +1,7 @@
 const axios = require('axios');
-const SpotifyAuthService = require('../services/spotify/auth-service.js');
+const SpotifyAuthService = require('../../services/spotify/auth-service.js');
 
-const { CLIENT_ID, CLIENT_SECRET, STATE_KEY, SCOPE } = require('../config/config.js');
+const { CLIENT_ID, CLIENT_SECRET, STATE_KEY, SCOPE } = require('../../config/config.js');
 
 class SpotifyAuthController {
   login = (req, res) => {

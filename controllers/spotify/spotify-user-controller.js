@@ -1,5 +1,5 @@
-const ApiError = require('../error/api-error.js');
-const SpotifyUserService = require('../services/spotify/user-service.js');
+const ApiError = require('../../error/api-error.js');
+const SpotifyUserService = require('../../services/spotify/user-service.js');
 
 class SpotifyUserController {
   getProfileData = async (req, res, next) => {

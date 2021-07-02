@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', require('./routes/auth-route.js'));
-app.use('/spotify', require('./routes/spotify-route.js'));
+app.use('/spotify', require('./routes/spotify/spotify-route.js'));
 
 app.use(apiErrorHandler);
 
